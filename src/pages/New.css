@@ -31,4 +31,23 @@ form#new-post {
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    display: flex;
+    flex-direction: row;
+  }
+  Spinner#loading  {
+    margin-right: 30px;
+  }
+
+  form#new-post h4 {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    color: red;
+    margin-top: 10px;
   }

@@ -1,10 +1,14 @@
 import React, { Component } from 'react'; 
 import api from '../services/api';
+import Spinner from 'react-spinner-material';
 
 import './New.css';
 
 class New extends Component {
     state = {
+        loading: false,
+        textButton: "Enviar",
+        error: '',
         image: null,
         author: '',
         place: '',
@@ -14,18 +18,34 @@ class New extends Component {
 
     handleSubmit = async e => {
         e.preventDefault();
+
+        if(this.state.image === null){
+            this.setState({ error: "selecione uma imagem"});
+        } else if (this.state.author.length < 1) {
+            this.setState({ error: "informar local do post"}); 
+        } else if (this.state.place.length < 1) {
+            this.setState({ error: "informar local do post"}); 
+        } else if (this.state.description.length < 1) {
+            this.setState({ error: "informar descrição"}); 
+        } else if (this.state.hashtags.length < 1) {
+            this.setState({ error: "informar hashtags"}); 
+        }else {
+
+            const data = new FormData();
         
-        const data = new FormData();
+            data.append('image', this.state.image);
+            data.append('author', this.state.author);
+            data.append('place', this.state.place);
+            data.append('description', this.state.description);
+            data.append('hashtags', this.state.hashtags);
+            
+            this.setState({ loading: true });
+            
+            await api.post('posts', data);
 
-        data.append('image', this.state.image);
-        data.append('author', this.state.author);
-        data.append('place', this.state.place);
-        data.append('description', this.state.description);
-        data.append('hashtags', this.state.hashtags);
-
-        await api.post('posts', data);
-
-        this.props.history.push('/');
+            this.props.history.push('/');
+        }
+        
     }
 
     handleImageChange = e => {
@@ -36,6 +56,7 @@ class New extends Component {
         this.setState({ [e.target.name]: e.target.value });
     }
     render() {
+        const {loading} = this.state;
         return(
             <form id="new-post" onSubmit={this.handleSubmit}>
                 <input type="file" onChange={this.handleImageChange} />
@@ -72,7 +93,12 @@ class New extends Component {
                     value={this.state.hashtags}
                 />
 
-                <button type="submit">Enviar</button>
+                <button type="submit" disabled={loading}>
+                    { loading && <Spinner size={30} spinnerColor={"#fff"} spinnerWidth={2} visible={true} />}
+                     { !loading && this.state.textButton } 
+                </button>
+
+                <h4>{this.state.error}</h4>
             </form>
         );
     }
